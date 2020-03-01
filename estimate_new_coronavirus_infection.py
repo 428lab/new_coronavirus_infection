@@ -10,35 +10,77 @@ import random
 from datetime import datetime as dt
 import datetime 
 from decimal import Decimal, ROUND_HALF_UP
+import re
 
 class EstimationInfectedPeople():
-    def __init__(self, ax, name, population, timestamp, accumulation, daily, latent_period = 5.5):
-        self.ax1 = ax
-        self.ax2 = ax.twinx()
+    def __init__(self, name, population, data, latent_period = 5.8, mortality_rate = 0.02):
+
         self.name = name
         self.population = population
-        self.timestamp = timestamp
-        self.accumulation =  np.array(accumulation, dtype=float)
-        self.daily = np.array(daily, dtype=float)
-        self.max = len(timestamp)
+
+        self.timestamp = []
+        self.infected = []
+        self.deaths = []
+        self.recovered = []
+        self.confirmed = []
+        self.values = []
+
+        for date, values in data.items():
+            self.timestamp.append(dt.strptime(date, '%m/%d/%Y'))
+
+            confirmed = int(values[0])
+            deaths = int(values[1])
+            recovered = int(values[2])
+            infected = confirmed - deaths - recovered
+
+            self.confirmed.append(confirmed)
+            self.infected.append(infected)
+            self.deaths.append(deaths)
+            self.recovered.append(infected)
+
+        self.max = len(self.timestamp)
         self.dt = 0.01
         self.time = np.arange(0, self.max, self.dt)
-        self.initParams = [self.population,0,np.min(self.accumulation[np.nonzero(self.accumulation)]),0]
         self.latent_period = latent_period
+        self.mortality_rate = sum(self.deaths)/sum(self.confirmed)/self.max
+        self.recovery_rate = sum(self.recovered)/sum(self.confirmed)/self.max
 
+    def SEIR(self, vec, time, Beta):
+        # vec[0]: S:Susceptible(未感染)
+        # vec[1]: E:Exposed(潜伏感染)  
+        # vec[2]: I:Infected(発症)     
+        # vec[3]: R:Recovered(回復)    
+        # vec[4]: D:Died(死亡)         
+        # 
+        # Beta:伝達係数
+        # Kappa:遷移率（E→I）
+        # Gamma:回復率
+        # Tau:死亡率 (2%)
+        S = vec[0]
+        E = vec[1]
+        I = vec[2]
+        R = vec[3]
+        D = vec[4]
+        N = S+E+I+R+D
+        Kappa = 1/self.latent_period
+        Gamma = self.recovery_rate
+        Tau = self.mortality_rate
+        return [-Beta*S*I/N, Beta*S*I/N-Kappa*E, Kappa*E - Gamma*I - Tau*I, Gamma*I, Tau*I]
 
-    def SEIR(self,v,time,rate_of_infection,infection_period):
-        #return [-rate_of_infection*v[0]*v[2], rate_of_infection*v[0]*v[2]-(1/self.latent_period)*v[1],(1/self.latent_period)*v[1]-(1/infection_period)*v[2],(1/infection_period)*v[2]]
-        return [-rate_of_infection*v[0]*v[2], rate_of_infection*v[0]*v[2]-(1/self.latent_period)*v[1],(1/self.latent_period)*v[1]-(1/infection_period)*v[2],(1/infection_period)*v[2]]
+    def estimate(self, Beta):
+        vec=odeint(self.SEIR,self.initParams,self.time,args=(Beta,))
+        est=vec[0:int(self.max/self.dt):int(1/self.dt)]
+        return est
 
-    def estimate(self, initialParams,rate_of_infection,infection_period):
-        v=odeint(self.SEIR,initialParams,self.time,args=(rate_of_infection,infection_period))
-        est=v[0:int(self.max/self.dt):int(1/self.dt)]
-        return est[:,2]
+    def estimate4plot(self, Beta):
+        multiple = 6
+        v=odeint(self.SEIR,self.bestInitParams,np.arange(0, self.max * multiple, self.dt),args=(Beta,))
+        est=v[0:int(self.max * multiple/self.dt):int(1/self.dt)]
+        return est
 
-    def y(self, params):
-        est_i=self.estimate(self.initParams,params[0],params[1])
-        return np.sum(est_i-self.daily*np.log(est_i))
+    def func(self, params):
+        est_i=self.estimate(params[0])
+        return np.sum(est_i[:,2] - self.infected * np.log(est_i[:,2]))
 
     def getRandLP(self):
         a = random.normalvariate(self.lp, 5)
@@ -47,75 +89,145 @@ class EstimationInfectedPeople():
         return self.lp
 
     def getEstimatedParams(self):
-        self.estimatedParams = minimize(self.y,[0.00001,4.0],method="nelder-mead")
-        return self.estimatedParams
+        no_new_record_cnt = 0
+        max_fun = 0
+        bounds = [(0, None)]
+        initParams = [0.001]
+        for susceptible in range(self.confirmed[len(self.confirmed)-1], self.population ):
+            self.initParams = [susceptible, 0, np.min(self.confirmed), 0, 0]
+            estimatedParams = minimize(self.func,initParams,method="L-BFGS-B", bounds=bounds)
+            if estimatedParams.success == True:
+                if max_fun < -estimatedParams.fun:
+                    no_new_record_cnt = 0
+                    max_fun = -estimatedParams.fun
+                    best_population = population
+                    print('Susceptible:',susceptible, ' Score:',max_fun)
+                    self.bestEstimatedParams = estimatedParams
+                    self.bestInitParams = self.initParams
+                else:
+                    no_new_record_cnt += 1
+                    if no_new_record_cnt > 1000:
+                        break
 
-    def plot(self, estimatedParams):
-        handler1, label1 = self.plot_total()
-        handler2, label2 = self.plot_daily()
-        handler3, label3 = self.plot_estimation(estimatedParams)
-        self.ax1.set_xlabel('Date',fontsize=20)
-        self.ax1.set_xticklabels(timestamp, fontsize=18, rotation=0)
-        self.ax1.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
-        self.ax1.set_title(self.name,fontsize=25)
-        self.ax1.grid()
-        self.ax1.legend(handler1 + handler3 , label1 + label3 , loc=2, borderaxespad=0. , fontsize=30)
+        return self.bestEstimatedParams
 
-    def plot_total(self):
-        self.ax1.plot(self.timestamp, self.accumulation, color='b', label="Total")
-        self.ax1.set_ylabel('Total # of infected people',fontsize=20)
-        self.ax1.set_xlim(self.timestamp[0], self.timestamp[-1]) 
-        self.ax1.set_ylim(0, ) 
-        return ax.get_legend_handles_labels()
+    def plot(self, ax, estimatedParams):
+        self.plot_bar(ax)
+        self.plot_estimation(ax, estimatedParams)
 
-    def plot_daily(self):
-        self.ax2.bar(self.timestamp, self.daily, color='y', label="Daily")
-        self.ax2.set_ylabel('Daily infections',fontsize=20)
-        self.ax2.set_xlim(self.timestamp[0], self.timestamp[-1]) 
-        self.ax2.set_ylim(0, max(self.daily)*1.5) 
-        #self.ax2.set_ylim(0, max(self.daily)) 
-        return self.ax2.get_legend_handles_labels()
+        ax.set_xlabel('Date',fontsize=20)
+        ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
+        ax.set_title(self.name,fontsize=25)
+        ax.grid()
 
-    def plot_estimation(self, estimatedParams):
-        self.ax2.plot(self.timestamp, self.estimate(self.initParams,estimatedParams.x[0],estimatedParams.x[1]),color='r',label="Estimation(daily)",linewidth=6.0)
-        return self.ax2.get_legend_handles_labels()
+    def plot_bar(self, ax):
+        width = 0.5
+        for day, infected, recovered, deaths in zip(self.timestamp, self.infected, self.recovered, self.deaths ):
+            bottom = 0
+            ax.bar(day, infected, width, bottom, color='red', label='Infectious')
+            bottom += infected
+            ax.bar(day, recovered, width, bottom, color='blue', label='Recovered')
+            bottom += recovered
+            ax.bar(day, deaths, width, bottom, color='black', label='Deaths')
+            bottom += deaths
+
+        ax.set_ylabel('Confirmed infections',fontsize=20)
+        handler, label = ax.get_legend_handles_labels()
+        ax.legend(handler[0:3] , label[0:3], loc="upper left", borderaxespad=0. , fontsize=20)
+
+        return 
+
+    def plot_estimation(self, ax, estimatedParams):
+        day = self.timestamp[0]
+        day_list = []
+        max = 0
+        estimated_value_list = []
+        for estimated_value in self.estimate4plot(estimatedParams.x[0])[:,2]:
+            if max < estimated_value:
+                max = estimated_value
+                peak = (day, estimated_value)
+
+            day_list.append(day)
+            estimated_value_list.append(estimated_value)
+            day += datetime.timedelta(days=1) 
+            if estimated_value < 0:
+                break
+        ax.annotate(peak[0].strftime('%Y/%m/%d') + ' ' + str(int(peak[1])), xy = peak, size = 20, color = "black")
+        ax.plot(day_list, estimated_value_list, color='red', label="Estimation infection", linewidth=3.0)
+
+        day = self.timestamp[0]
+        day_list = []
+        estimated_value_list = []
+        for estimated_value in self.estimate4plot(estimatedParams.x[0])[:,3]:
+            day_list.append(day)
+            estimated_value_list.append(estimated_value)
+            day += datetime.timedelta(days=1) 
+            if estimated_value < 0:
+                break
+        ax.plot(day_list, estimated_value_list, color='blue', label="Estimation recovered", linewidth=3.0)
+
+        day = self.timestamp[0]
+        day_list = []
+        estimated_value_list = []
+        for estimated_value in self.estimate4plot(estimatedParams.x[0])[:,4]:
+            day_list.append(day)
+            estimated_value_list.append(estimated_value)
+            day += datetime.timedelta(days=1) 
+            if estimated_value < 0:
+                break
+        ax.plot(day_list, estimated_value_list, color='black', label="Estimation deaths", linewidth=3.0)
+
+        ax.set_ylim(0,) 
+
+        handler, label = ax.get_legend_handles_labels()
+        ax.legend(handler[0:6] , label[0:6], loc="upper right", borderaxespad=0. , fontsize=20)
+
+        return 
 
     def print_estimation(self, estimatedParams):
         print('<<' + self.name + '>>')
-        print('rate of infection:', Decimal(estimatedParams.x[0]).quantize(Decimal('.00000000'),rounding=ROUND_HALF_UP))
-        #print('latent period   :', self.latent_period)
-        print('Infection period :', Decimal(estimatedParams.x[1]).quantize(Decimal('.00000000'),rounding=ROUND_HALF_UP))
+        print('Beta:', Decimal(estimatedParams.x[0]).quantize(Decimal('.000000'),rounding=ROUND_HALF_UP))
+        print('Kappa:', Decimal(1/self.latent_period).quantize(Decimal('.000000'),rounding=ROUND_HALF_UP))
+        print('Gamma:', Decimal(self.recovery_rate).quantize(Decimal('.000000'),rounding=ROUND_HALF_UP))
+        print('Tau:', Decimal(self.mortality_rate).quantize(Decimal('.000000'),rounding=ROUND_HALF_UP))
 
-    def save_plot(self):
-        output = 'new_coronavirus_' + self.name + '.png'
+
+    def save_plot(self,title=''):
+        output = 'new_coronavirus_' + self.name + '_' + title + '.png'
         plt.savefig(output) 
 
+def convert_count_by_country(csv_data):
+    data = {}
+    for date, country, confirmed ,deaths, recovered in zip(csv_data['ObservationDate'], csv_data['Country/Region'],csv_data['Confirmed'],csv_data['Deaths'],csv_data['Recovered']):
+        date = re.sub("[0-9]{2}:[0-9]{2}:[0-9]{2}","",date)
+
+        if country not in data:
+            data.setdefault(country,{date:[0, 0, 0]})
+
+        if date not in data[country]:
+            data[country].setdefault(date, [0, 0, 0])
+
+        data[country][date][0] += float(confirmed)
+        data[country][date][1] += float(deaths)
+        data[country][date][2] += float(recovered)
+
+    return data
 
 def read_csv(filename):
-    accumulation = {}
+    confirmed = {}
     daily = {}
     timestamp = []
     pre_value = {}
+    data = {}
     with open(filename) as f:
         reader = csv.reader(f)
         header = next(reader)
         for row in reader:
             for cnt, name in enumerate(header):
-                if name not in pre_value:
-                    pre_value[name] = 0
-                if name not in accumulation:
-                    accumulation[name] = []
-                if name not in daily:
-                    daily[name] = []
-                if name == 'timestamp':
-                    timestamp.append(dt.strptime(row[cnt], '%Y-%m-%d'))
-                else:
-                    value = int(row[cnt])
-                    accumulation[name].append(value)
-                    daily[name].append(value - pre_value[name])
-                    pre_value[name] = value
-    return timestamp, accumulation, daily
-
+                if name not in data:
+                    data[name] = []
+                data[name].append(row[cnt])
+    return convert_count_by_country(data)
 
 if __name__ == '__main__':
 
@@ -124,34 +236,42 @@ if __name__ == '__main__':
     ############################################################
     args = sys.argv
     filename = args[1]
-    timestamp, accumulation, daily = read_csv(filename)
+    data = read_csv(filename)
 
-    #fig = plt.figure()
+    ############################################################
+    # Estimation infections in Japan
+    ############################################################
+    population = 120000000
     fig = plt.figure(figsize=(20,10),dpi=200)
-    fig.suptitle('Infections of a new coronavirus', fontsize=30)
-
-    ############################################################
-    # Estimation for infected People in China and visualization
-    ############################################################
     ax = fig.add_subplot(1, 1, 1)
-    China = EstimationInfectedPeople(ax, 'China', 58500000, timestamp, accumulation['China'], daily['China'])
-    estParams = China.getEstimatedParams()
-    China.print_estimation(estParams)
-    China.plot(estParams)
-    China.save_plot()
-    plt.close()
+    fig.suptitle('Infections of a new coronavirus in Japan', fontsize=30)
+    Japan = EstimationInfectedPeople('Japan', population, data['Japan'])
+    Japan.plot_bar(ax)
+    Japan.save_plot('obcerved') 
 
-    #fig = plt.figure()
-    fig = plt.figure(figsize=(20,10),dpi=200)
-    fig.suptitle('Infections of a new coronavirus', fontsize=30)
-    ############################################################
-    # Estimation for infected People in Japan and visualization
-    ############################################################
-    ax = fig.add_subplot(1, 1, 1)
-    Japan = EstimationInfectedPeople(ax, 'Japan', 12000000, timestamp, accumulation['Japan'], daily['Japan'])
     estParams = Japan.getEstimatedParams()
+    print(estParams)
     Japan.print_estimation(estParams)
-    Japan.plot(estParams)
-    Japan.save_plot()
-    plt.close()
+    Japan.plot(ax, estParams)
+    Japan.save_plot('estimation') 
+    ax.clear()
+
+    ############################################################
+    # Estimation infections in Mainland China
+    ############################################################
+    population = 1400000000
+    fig = plt.figure(figsize=(20,10),dpi=200)
+    ax = fig.add_subplot(1, 1, 1)
+    fig.suptitle('Infections of a new coronavirus in Mainland China', fontsize=30)
+    China = EstimationInfectedPeople('Mainland China', population, data['Mainland China'])
+    China.plot_bar(ax)
+    China.save_plot('obcerved') 
+
+    estParams = China.getEstimatedParams()
+    print(estParams)
+    China.print_estimation(estParams)
+    China.plot(ax, estParams)
+    China.save_plot('estimation') 
+    ax.clear()
+
 
