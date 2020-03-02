@@ -24,7 +24,17 @@ class EstimationInfectedPeople():
         self.recovered = []
         self.confirmed = []
         self.values = []
+        #self.deaths_confirmed = []
+        #self.recovered_confirmed = []
+        #self.delta_deaths = []
+        #self.delta_recovered = []
 
+        self.delta_deaths_divided_by_infected = []
+        self.delta_recovered_divided_by_infected = []
+
+        pre_deaths = 0
+        pre_recovered = 0
+        pre_infected = 0
         for date, values in data.items():
             self.timestamp.append(dt.strptime(date, '%m/%d/%Y'))
 
@@ -36,14 +46,86 @@ class EstimationInfectedPeople():
             self.confirmed.append(confirmed)
             self.infected.append(infected)
             self.deaths.append(deaths)
-            self.recovered.append(infected)
+            self.recovered.append(recovered)
+
+            #self.deaths_confirmed.append(deaths/confirmed)
+            #self.recovered_confirmed.append(recovered/confirmed)
+
+            #self.delta_deaths.append(deaths - pre_deaths)
+            #self.delta_recovered.append(recovered - pre_recovered)
+
+
+            if pre_infected != 0:
+                self.delta_deaths_divided_by_infected.append((deaths - pre_deaths)/pre_infected)
+                self.delta_recovered_divided_by_infected.append((recovered - pre_recovered)/pre_infected)
+            else:
+                self.delta_deaths_divided_by_infected.append(0)
+                self.delta_recovered_divided_by_infected.append(0)
+
+
+
+            pre_deaths = deaths
+            pre_recovered = recovered
+            pre_infected = infected
 
         self.max = len(self.timestamp)
         self.dt = 0.01
         self.time = np.arange(0, self.max, self.dt)
         self.latent_period = latent_period
-        self.mortality_rate = sum(self.deaths)/sum(self.confirmed)/self.max
-        self.recovery_rate = sum(self.recovered)/sum(self.confirmed)/self.max
+        #self.mortality_rate = max(self.deaths)/max(self.confirmed)/self.max
+        #self.recovery_rate = max(self.recovered)/max(self.confirmed)/self.max
+
+        #self.mortality_rate = max(self.deaths)/max(self.confirmed)/len(self.time)
+        #self.recovery_rate = max(self.recovered)/max(self.confirmed)/len(self.time)
+        #self.mortality_rate = sum(self.deaths_confirmed)/len(self.deaths_confirmed)
+        #self.recovery_rate = sum(self.recovered_confirmed)/len(self.recovered_confirmed)
+        #self.mortality_rate = sum(self.delta_deaths)/len(self.delta_deaths)
+        #self.recovery_rate = sum(self.delta_recovered)/len(self.delta_recovered)
+
+   
+        self.mortality_rate = sum(self.delta_deaths_divided_by_infected)/len(self.delta_deaths_divided_by_infected)
+        self.recovery_rate = sum(self.delta_recovered_divided_by_infected)/len(self.delta_recovered_divided_by_infected)
+
+        #print('self.infected',self.infected)
+
+        #print('self.deaths',self.deaths)
+        #print('self.delta_deaths_divided_by_infected',self.delta_deaths_divided_by_infected)
+        #print('len(self.delta_deaths_divided_by_infected)',len(self.delta_deaths_divided_by_infected))
+        #print('sum(self.delta_deaths_divided_by_infected)/len(self.delta_deaths_divided_by_infected)',sum(self.delta_deaths_divided_by_infected)/len(self.delta_deaths_divided_by_infected))
+
+        #print('self.recovered',self.recovered)
+        #print('self.delta_recovered_divided_by_infected',self.delta_recovered_divided_by_infected)
+        #print('len(self.delta_recovered_divided_by_infected)',len(self.delta_recovered_divided_by_infected))
+        #print('sum(self.delta_recovered_divided_by_infected)/len(self.delta_recovered_divided_by_infected)',sum(self.delta_recovered_divided_by_infected)/len(self.delta_recovered_divided_by_infected))
+
+
+        #print('self.confirmed',self.confirmed)
+
+        #print('self.delta_deaths',self.delta_deaths)
+        #print('len(self.delta_deaths)',len(self.delta_deaths))
+        #print('sum(self.delta_deaths)/len(self.delta_deaths)',sum(self.delta_deaths)/len(self.delta_deaths))
+
+        #print('self.delta_recovered',self.delta_recovered)
+        #print('len(self.delta_recovered)',len(self.delta_recovered))
+        #print('sum(self.delta_recovered)/len(self.delta_recovered)',sum(self.delta_recovered)/len(self.delta_recovered))
+
+
+        #print('self.recovered_confirmed',self.recovered_confirmed)
+        #print('len(self.recovered_confirmed)',len(self.recovered_confirmed))
+        #print('sum(self.recovered_confirmed)/len(self.recovered_confirmed)',sum(self.recovered_confirmed)/len(self.recovered_confirmed))
+        #print('sum(self.recovered)/sum(self.confirmed)',sum(self.recovered)/sum(self.confirmed))
+
+        #print('self.deaths_confirmed',self.deaths_confirmed)
+        #print('len(self.deaths_confirmed)',len(self.deaths_confirmed))
+        #print('sum(self.deaths_confirmed)/len(self.deaths_confirmed)',sum(self.deaths_confirmed)/len(self.deaths_confirmed))
+        #print('sum(self.deaths)/sum(self.confirmed)',sum(self.deaths)/sum(self.confirmed))
+
+        #print('self.max',self.max)
+        #print('max(self.deaths)',max(self.deaths))
+        #print('max(self.recovered)',max(self.recovered))
+        #print('max(self.confirmed)',max(self.confirmed))
+        print('self.mortality_rate',self.mortality_rate)
+        print('self.recovery_rate',self.recovery_rate)
 
     def SEIR(self, vec, time, Beta):
         # vec[0]: S:Susceptible(未感染)
@@ -214,10 +296,6 @@ def convert_count_by_country(csv_data):
     return data
 
 def read_csv(filename):
-    confirmed = {}
-    daily = {}
-    timestamp = []
-    pre_value = {}
     data = {}
     with open(filename) as f:
         reader = csv.reader(f)
