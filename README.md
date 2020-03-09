@@ -17,6 +17,11 @@ $ docker-compose exec covid_19_seir_model bash
 Run script at next command on the docker machine console.
 
 ```
+python estimate_new_coronavirus_infection.py covid_19_data.csv
+```
+
+If you are a kaggle user, you can get the latest data with the API
+```
 API_NAME=xxxxx API_KEY=xxxxxx bash update.sh
 ```
 
