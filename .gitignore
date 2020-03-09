@@ -1,1 +1,3 @@
 *.png
+*.csv
+!covid_19_data.csv

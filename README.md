@@ -20,4 +20,9 @@ Run script at next command on the docker machine console.
 python estimate_new_coronavirus_infection.py covid_19_data.csv
 ```
 
+If you are a kaggle user, you can get the latest data with the API
+```
+API_NAME=xxxxx API_KEY=xxxxxx bash update.sh
+```
+
 This command output two *.png image files to current folder.

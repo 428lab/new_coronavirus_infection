@@ -15,5 +15,14 @@ RUN pip install --upgrade pip
 RUN pip install --upgrade setuptools
 RUN pip install scipy
 RUN pip install matplotlib
+RUN pip install kaggle
 
 WORKDIR /var/www/src
+# ARG API_NAME
+# ARG API_KEY
+# RUN mkdir -p ~/.kaggle
+# RUN API_DATA="{\"username\":\"${API_NAME}\",\"key\":\"${API_KEY}\"}" && \
+#     echo ${API_DATA} > ~/.kaggle/kaggle.json && \
+#     chmod 600 ~/.kaggle/kaggle.json
+# RUN kaggle datasets download sudalairajkumar/novel-corona-virus-2019-dataset && \
+#     rm -rf *.csv && unzip *.zip && rm -rf *.zip

@@ -1,7 +1,11 @@
 version: '3'
 services:
   covid_19_seir_model:
-    build: ./docker/python
+    build: 
+      context: ./docker/python
+      # args:
+        # API_NAME: $API_NAME
+        # API_KEY: $API_KEY
     volumes:
       - ./src:/var/www/src
     tty: true
