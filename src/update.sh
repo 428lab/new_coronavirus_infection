@@ -1,7 +1,7 @@
 #!/bin/bash
 
 mkdir -p ~/.kaggle
-API_DATA="{\"username\":\"${API_NAME}\",\"key\":\"${API_KEY}\"}" && \
+API_DATA="{\"username\":\"${KAGGLE_USER_NAME}\",\"key\":\"${KAGGLE_API_KEY}\"}" && \
     echo ${API_DATA} > ~/.kaggle/kaggle.json && \
     chmod 600 ~/.kaggle/kaggle.json
 kaggle datasets download sudalairajkumar/novel-corona-virus-2019-dataset
