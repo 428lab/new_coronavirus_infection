@@ -4,6 +4,7 @@ import csv
 import numpy as np
 from scipy.integrate import odeint
 from scipy.optimize import minimize
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import random
@@ -11,6 +12,10 @@ from datetime import datetime as dt
 import datetime 
 from decimal import Decimal, ROUND_HALF_UP
 import re
+print(mpl.get_configdir() + '/matplotlibrc')
+print(mpl.rcParams['backend'])
+mpl.use('TkAgg',warn=False, force=True)
+
 
 class EstimationInfectedPeople():
     def __init__(self, name, population, data, latent_period = 5.8, mortality_rate = 0.02):
@@ -175,20 +180,22 @@ class EstimationInfectedPeople():
         max_fun = 0
         bounds = [(0, None)]
         initParams = [0.001]
-        for susceptible in range(self.confirmed[len(self.confirmed)-1], self.population ):
+        step=int(self.confirmed[len(self.confirmed)-1]/10)
+        print(step)
+        for susceptible in range(self.confirmed[len(self.confirmed)-1], self.population, step ):
             self.initParams = [susceptible, 0, np.min(self.confirmed), 0, 0]
             estimatedParams = minimize(self.func,initParams,method="L-BFGS-B", bounds=bounds)
             if estimatedParams.success == True:
-                if max_fun < -estimatedParams.fun:
+                if max_fun < -int(estimatedParams.fun):
                     no_new_record_cnt = 0
-                    max_fun = -estimatedParams.fun
+                    max_fun = -int(estimatedParams.fun)
                     best_population = population
                     print('Susceptible:',susceptible, ' Score:',max_fun)
                     self.bestEstimatedParams = estimatedParams
                     self.bestInitParams = self.initParams
                 else:
                     no_new_record_cnt += 1
-                    if no_new_record_cnt > 1000:
+                    if no_new_record_cnt > 250:
                         break
 
         return self.bestEstimatedParams
@@ -315,6 +322,42 @@ if __name__ == '__main__':
     args = sys.argv
     filename = args[1]
     data = read_csv(filename)
+
+    ############################################################
+    # Estimation infections in South Korea
+    ############################################################
+    population = 52000000
+    fig = plt.figure(figsize=(20,10),dpi=200)
+    ax = fig.add_subplot(1, 1, 1)
+    fig.suptitle('Infections of a new coronavirus in South Korea', fontsize=30)
+    SouthKorea = EstimationInfectedPeople('South Korea', population, data['South Korea'])
+    SouthKorea.plot_bar(ax)
+    SouthKorea.save_plot('obcerved') 
+
+    estParams = SouthKorea.getEstimatedParams()
+    print(estParams)
+    SouthKorea.print_estimation(estParams)
+    SouthKorea.plot(ax, estParams)
+    SouthKorea.save_plot('estimation') 
+    ax.clear()
+
+    ############################################################
+    # Estimation infections in Itary
+    ############################################################
+    population = 60000000
+    fig = plt.figure(figsize=(20,10),dpi=200)
+    ax = fig.add_subplot(1, 1, 1)
+    fig.suptitle('Infections of a new coronavirus in Italy', fontsize=30)
+    Italy = EstimationInfectedPeople('Italy', population, data['Italy'])
+    Italy.plot_bar(ax)
+    Italy.save_plot('obcerved') 
+
+    estParams = Italy.getEstimatedParams()
+    print(estParams)
+    Italy.print_estimation(estParams)
+    Italy.plot(ax, estParams)
+    Italy.save_plot('estimation') 
+    ax.clear()
 
     ############################################################
     # Estimation infections in Japan
