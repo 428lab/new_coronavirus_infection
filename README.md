@@ -21,6 +21,7 @@ python estimate_new_coronavirus_infection.py covid_19_data.csv
 ```
 
 If you are a kaggle user, you can get the latest data with the API
+
 host
 ```
 $ cp .env.sample .env
