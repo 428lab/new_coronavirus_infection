@@ -8,4 +8,4 @@ kaggle datasets download sudalairajkumar/novel-corona-virus-2019-dataset
 rm -rf *.csv && unzip *.zip && rm -rf *.zip
 
 rm -rf *.png
-python estimate_new_coronavirus_infection.py covid_19_data.csv
+# python estimate_new_coronavirus_infection.py covid_19_data.csv
