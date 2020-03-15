@@ -88,7 +88,7 @@ class EstimationInfectedPeople():
         #self.recovery_rate = sum(self.recovered_confirmed)/len(self.recovered_confirmed)
         #self.mortality_rate = sum(self.delta_deaths)/len(self.delta_deaths)
         #self.recovery_rate = sum(self.delta_recovered)/len(self.delta_recovered)
-        self.estimation_graph = dict()
+        self.graph = dict()
    
         self.mortality_rate = sum(self.delta_deaths_divided_by_infected)/len(self.delta_deaths_divided_by_infected)
         self.recovery_rate = sum(self.delta_recovered_divided_by_infected)/len(self.delta_recovered_divided_by_infected)
@@ -213,13 +213,21 @@ class EstimationInfectedPeople():
 
     def plot_bar(self, ax):
         width = 0.5
+        self.graph["fact"] = dict()
+        self.graph["fact"]["infected"] = dict()
+        self.graph["fact"]["recovered"] = dict()
+        self.graph["fact"]["deaths"] = dict()
+
         for day, infected, recovered, deaths in zip(self.timestamp, self.infected, self.recovered, self.deaths ):
             bottom = 0
             ax.bar(day, infected, width, bottom, color='red', label='Infectious')
+            self.graph["fact"]["infected"][day.strftime("%Y/%m/%d")] = infected
             bottom += infected
             ax.bar(day, recovered, width, bottom, color='blue', label='Recovered')
+            self.graph["fact"]["recovered"][day.strftime("%Y/%m/%d")] = recovered
             bottom += recovered
             ax.bar(day, deaths, width, bottom, color='black', label='Deaths')
+            self.graph["fact"]["deaths"][day.strftime("%Y/%m/%d")] = deaths
             bottom += deaths
 
         ax.set_ylabel('Confirmed infections',fontsize=20)
@@ -232,6 +240,7 @@ class EstimationInfectedPeople():
         day = self.timestamp[0]
         day_list = []
         max = 0
+        self.graph["estimation"] = dict()
 
         estimated_value_list = []
         for estimated_value in self.estimate4plot(estimatedParams.x[0])[:,2]:
@@ -247,7 +256,7 @@ class EstimationInfectedPeople():
         ax.annotate(peak[0].strftime('%Y/%m/%d') + ' ' + str(int(peak[1])), xy = peak, size = 20, color = "black")
         ax.plot(day_list, estimated_value_list, color='red', label="Estimation infection", linewidth=3.0)
 
-        self.estimation_graph["infection"] = estimated_value_list
+        self.graph["estimation"]["infection"] = estimated_value_list
 
         day = self.timestamp[0]
         day_list = []
@@ -260,7 +269,7 @@ class EstimationInfectedPeople():
                 break
         ax.plot(day_list, estimated_value_list, color='blue', label="Estimation recovered", linewidth=3.0)
 
-        self.estimation_graph["recovered"] = estimated_value_list
+        self.graph["estimation"]["recovered"] = estimated_value_list
 
         day = self.timestamp[0]
         day_list = []
@@ -273,7 +282,7 @@ class EstimationInfectedPeople():
                 break
         ax.plot(day_list, estimated_value_list, color='black', label="Estimation deaths", linewidth=3.0)
 
-        self.estimation_graph["deaths"] = estimated_value_list
+        self.graph["estimation"]["deaths"] = estimated_value_list
 
         ax.set_ylim(0,)
 
@@ -354,4 +363,4 @@ if __name__ == '__main__':
     ax.clear()
 
     f = open("output.json", "w")
-    json.dump(data.estimation_graph, f)
+    json.dump(data.graph, f)
