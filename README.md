@@ -62,3 +62,6 @@ You can find the available country names by running following script.
 ```
 $ python getCountryList.py
 ```
+
+You need to add a population of the country to `country.json` file.
+
