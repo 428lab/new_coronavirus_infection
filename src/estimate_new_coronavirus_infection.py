@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import csv
+import json
 import numpy as np
 from scipy.integrate import odeint
 from scipy.optimize import minimize
@@ -319,82 +320,31 @@ def read_csv(filename):
 if __name__ == '__main__':
 
     ############################################################
-    # Read csv file 
+    # Read csv file and country.json
     ############################################################
     args = sys.argv
-    filename = args[1]
-    data = read_csv(filename)
+    country_name = args[1]
+    covid_19_data = read_csv('covid_19_data.csv')
+
+    country_json = open('country.json', 'r')
+    country_param = json.load(country_json)
 
     ############################################################
-    # Estimation infections in South Korea
+    # Estimation infections in data
     ############################################################
-    population = 52000000
+    population = country_param['country'][country_name];
     fig = plt.figure(figsize=(20,10),dpi=200)
     ax = fig.add_subplot(1, 1, 1)
-    fig.suptitle('Infections of a new coronavirus in South Korea', fontsize=30)
-    SouthKorea = EstimationInfectedPeople('South Korea', population, data['South Korea'])
-    SouthKorea.plot_bar(ax)
-    SouthKorea.save_plot('obcerved') 
+    fig.suptitle('Infections of a new coronavirus in ' + country_name, fontsize=30)
+    data = EstimationInfectedPeople(country_name, population, covid_19_data[country_name])
+    data.plot_bar(ax)
+    data.save_plot('obcerved') 
 
-    estParams = SouthKorea.getEstimatedParams()
+    estParams = data.getEstimatedParams()
     print(estParams)
-    SouthKorea.print_estimation(estParams)
-    SouthKorea.plot(ax, estParams)
-    SouthKorea.save_plot('estimation') 
-    ax.clear()
-
-    ############################################################
-    # Estimation infections in Itary
-    ############################################################
-    population = 60000000
-    fig = plt.figure(figsize=(20,10),dpi=200)
-    ax = fig.add_subplot(1, 1, 1)
-    fig.suptitle('Infections of a new coronavirus in Italy', fontsize=30)
-    Italy = EstimationInfectedPeople('Italy', population, data['Italy'])
-    Italy.plot_bar(ax)
-    Italy.save_plot('obcerved') 
-
-    estParams = Italy.getEstimatedParams()
-    print(estParams)
-    Italy.print_estimation(estParams)
-    Italy.plot(ax, estParams)
-    Italy.save_plot('estimation') 
-    ax.clear()
-
-    ############################################################
-    # Estimation infections in Japan
-    ############################################################
-    population = 120000000
-    fig = plt.figure(figsize=(20,10),dpi=200)
-    ax = fig.add_subplot(1, 1, 1)
-    fig.suptitle('Infections of a new coronavirus in Japan', fontsize=30)
-    Japan = EstimationInfectedPeople('Japan', population, data['Japan'])
-    Japan.plot_bar(ax)
-    Japan.save_plot('obcerved') 
-
-    estParams = Japan.getEstimatedParams()
-    print(estParams)
-    Japan.print_estimation(estParams)
-    Japan.plot(ax, estParams)
-    Japan.save_plot('estimation') 
-    ax.clear()
-
-    ############################################################
-    # Estimation infections in Mainland China
-    ############################################################
-    population = 1400000000
-    fig = plt.figure(figsize=(20,10),dpi=200)
-    ax = fig.add_subplot(1, 1, 1)
-    fig.suptitle('Infections of a new coronavirus in Mainland China', fontsize=30)
-    China = EstimationInfectedPeople('Mainland China', population, data['Mainland China'])
-    China.plot_bar(ax)
-    China.save_plot('obcerved') 
-
-    estParams = China.getEstimatedParams()
-    print(estParams)
-    China.print_estimation(estParams)
-    China.plot(ax, estParams)
-    China.save_plot('estimation') 
+    data.print_estimation(estParams)
+    data.plot(ax, estParams)
+    data.save_plot('estimation') 
     ax.clear()
 
 
