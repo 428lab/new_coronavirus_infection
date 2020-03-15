@@ -5,6 +5,7 @@ services:
       context: ./docker/python
     volumes:
       - ./src:/var/www/src
+      - ./web:/var/www/web
     tty: true
     environment:
       KAGGLE_USER_NAME: ${API_NAME}

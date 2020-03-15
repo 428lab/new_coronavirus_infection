@@ -362,5 +362,5 @@ if __name__ == '__main__':
     data.save_plot('estimation') 
     ax.clear()
 
-    f = open("output.json", "w")
+    f = open("../web/static/output.json", "w")
     json.dump(data.graph, f)
