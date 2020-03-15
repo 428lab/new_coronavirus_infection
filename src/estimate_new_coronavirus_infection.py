@@ -15,7 +15,8 @@ from decimal import Decimal, ROUND_HALF_UP
 import re
 print(mpl.get_configdir() + '/matplotlibrc')
 print(mpl.rcParams['backend'])
-mpl.use('TkAgg',warn=False, force=True)
+# mpl.use('TkAgg',warn=False, force=True)
+mpl.use('agg', force=True)
 
 
 class EstimationInfectedPeople():
@@ -87,7 +88,7 @@ class EstimationInfectedPeople():
         #self.recovery_rate = sum(self.recovered_confirmed)/len(self.recovered_confirmed)
         #self.mortality_rate = sum(self.delta_deaths)/len(self.delta_deaths)
         #self.recovery_rate = sum(self.delta_recovered)/len(self.delta_recovered)
-
+        self.estimation_graph = dict()
    
         self.mortality_rate = sum(self.delta_deaths_divided_by_infected)/len(self.delta_deaths_divided_by_infected)
         self.recovery_rate = sum(self.delta_recovered_divided_by_infected)/len(self.delta_recovered_divided_by_infected)
@@ -231,6 +232,7 @@ class EstimationInfectedPeople():
         day = self.timestamp[0]
         day_list = []
         max = 0
+
         estimated_value_list = []
         for estimated_value in self.estimate4plot(estimatedParams.x[0])[:,2]:
             if max < estimated_value:
@@ -245,6 +247,8 @@ class EstimationInfectedPeople():
         ax.annotate(peak[0].strftime('%Y/%m/%d') + ' ' + str(int(peak[1])), xy = peak, size = 20, color = "black")
         ax.plot(day_list, estimated_value_list, color='red', label="Estimation infection", linewidth=3.0)
 
+        self.estimation_graph["infection"] = estimated_value_list
+
         day = self.timestamp[0]
         day_list = []
         estimated_value_list = []
@@ -255,6 +259,8 @@ class EstimationInfectedPeople():
             if estimated_value < 0:
                 break
         ax.plot(day_list, estimated_value_list, color='blue', label="Estimation recovered", linewidth=3.0)
+
+        self.estimation_graph["recovered"] = estimated_value_list
 
         day = self.timestamp[0]
         day_list = []
@@ -267,12 +273,14 @@ class EstimationInfectedPeople():
                 break
         ax.plot(day_list, estimated_value_list, color='black', label="Estimation deaths", linewidth=3.0)
 
-        ax.set_ylim(0,) 
+        self.estimation_graph["deaths"] = estimated_value_list
+
+        ax.set_ylim(0,)
 
         handler, label = ax.get_legend_handles_labels()
         ax.legend(handler[0:6] , label[0:6], loc="upper right", borderaxespad=0. , fontsize=20)
 
-        return 
+        return
 
     def print_estimation(self, estimatedParams):
         print('<<' + self.name + '>>')
@@ -345,4 +353,5 @@ if __name__ == '__main__':
     data.save_plot('estimation') 
     ax.clear()
 
-
+    f = open("output.json", "w")
+    json.dump(data.estimation_graph, f)
