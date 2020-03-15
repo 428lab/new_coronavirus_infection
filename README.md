@@ -32,7 +32,7 @@ Copy .env.sample to .env.
 $ cp .env.sample .env
 ```
 
-Set API_NAME and API_KEY.
+Set API_NAME and API_KEY in `.env` file.
 
 ```
 API_NAME=[KAGGLE_USER_NAME]
@@ -42,7 +42,7 @@ API_KEY=[KAGGLE_USER_KEY]
 Again, set up docker.  
 
 ```
-$ docker-compose down.
+$ docker-compose down
 $ docker-compose build --no-cache
 $ docker-compose up -d
 $ docker-compose exec covid_19_seir_model bash
