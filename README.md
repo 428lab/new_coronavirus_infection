@@ -56,3 +56,9 @@ $ python estimate_new_coronavirus_infection.py [country_name]
 ```
 
 This command output two *.png image files to current folder.
+
+You can find the available country names by running following script.
+
+```
+$ python getCountryList.py
+```
