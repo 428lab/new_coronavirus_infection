@@ -370,6 +370,7 @@ if __name__ == '__main__':
 
     # if datetime.datetime.now().strftime("%Y%m%d") not in graph_data[country_name].keys():
     #     graph_data[country_name][datetime.datetime.now().strftime("%Y%m%d")] = dict()
+    data.graph["last_update"] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M")
     graph_data[country_name] = data.graph
     # graph_data[country_name][datetime.datetime.now().strftime("%Y%m%d")] = data.graph
 

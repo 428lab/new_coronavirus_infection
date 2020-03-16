@@ -14,7 +14,7 @@ export default {
       // ogp
       { hid: 'og:site_name', property: 'og:site_name', content: 'COVID-19 未来予測（SEIRモデル） - 四谷ラボ' },
       { hid: 'og:type', property: 'og:type', content: 'website' },
-      { hid: 'og:url', property: 'og:url', content: 'https://estimate_covid-19.428lab.net/' },
+      { hid: 'og:url', property: 'og:url', content: 'https://covid19.428lab.net/' },
       { hid: 'og:title', property: 'og:title', content: '四谷ラボ-未来志向オープンイノベーションラボラトリ' },
       { hid: 'og:description', property: 'og:description', content: '家でも職場でもない第３の仕事場兼遊び場として、知的好奇心と刺激の場・四谷ラボで誰でも自由に参加して研究・交流・発信しよう' },
       { hid: 'og:image', property: 'og:image', content: 'yotsuyalab_8.webp' },
@@ -25,7 +25,7 @@ export default {
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:site', content: '@lab_428' },
       { name: 'twitter:title', content: 'COVID-19 未来予測（SEIRモデル） - 四谷ラボ' },
-      { name: 'twitter:url', content: 'https://estimate_covid-19.428lab.net/' },
+      { name: 'twitter:url', content: 'https://covid19.428lab.net/' },
       { name: 'twitter:description', content: '家でも職場でもない第３の仕事場兼遊び場として、知的好奇心と刺激の場・四谷ラボで誰でも自由に参加して研究・交流・発信しよう' },
       { name: 'twitter:image', content: 'yotsuyalab_8.webp' },
 

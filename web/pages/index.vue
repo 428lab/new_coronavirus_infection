@@ -26,7 +26,7 @@
             SNSでシェア
           </span>
           <a
-            href="https://www.facebook.com/share.php?u=https://estimate_covid-19.428lab.net"
+            href="https://www.facebook.com/share.php?u=https://covid19.428lab.net"
             class="text-center"
           >
             <span class=" p-2 bg-facebook">
@@ -34,7 +34,7 @@
             </span>
           </a>
           <a
-            href="https://twitter.com/share?text=新型コロナウイルスの感染者数を数理モデルで予測する - 四谷ラボ&url=https://estimate_covid-19.428lab.net&hashtags=新型コロナウイルス,COVID-19"
+            href="https://twitter.com/share?text=新型コロナウイルスの感染者数を数理モデルで予測する - 四谷ラボ&url=https://covid19.428lab.net&hashtags=新型コロナウイルス,COVID-19"
             class="text-center"
           >
             <span class=" p-2 bg-twitter">
@@ -57,6 +57,10 @@
           </select>
         </div>
       </div>
+      <p>
+        前回更新日時：{{ lastUpdate }}
+      </p>
+
       <!-- <button @click="setData()"></button> -->
       <line-chart
         v-if="estimation"
@@ -64,6 +68,13 @@
         :options="chartOptions"
         class="mt-3"
       />
+      <div class="mt-3">
+        <h3 class="h4">予測結果</h3>
+        <p>
+          感染のピーク：{{ peak.date }}<br />
+          感染者数（1日の増減）：{{ peak.max }} 人
+        </p>
+      </div>
     </div>
     <footer class="mt-5 mb-3">
       <div class="container">
@@ -153,8 +164,16 @@ export default {
     });
     const firstDateString = labelsData.shift();
     const firstDate = new Date(firstDateString);
+    let peak = { day: "2020/1/1", max: 0 };
     const labels = est_data["Japan"].estimation.infection.map((e, i) => {
-      return new Date(firstDateString).add({ days: i }).toFormat("YYYY/MM/DD");
+      const date = new Date(firstDateString)
+        .add({ days: i })
+        .toFormat("YYYY/MM/DD");
+      if (peak.max < e) {
+        peak.max = e;
+        peak.date = date;
+      }
+      return date;
     });
 
     let fact = {};
@@ -168,7 +187,9 @@ export default {
       estimation: est_data["Japan"].estimation,
       fact: fact,
       countries: countries,
-      est_data: est_data
+      est_data: est_data,
+      peak: peak,
+      lastUpdate: est_data["Japan"]["last_update"]
     };
   },
   methods: {
@@ -181,10 +202,16 @@ export default {
       );
       const firstDateString = labelsData.shift();
       const firstDate = new Date(firstDateString);
+      let peak = { day: "2020/1/1", max: 0 };
       const labels = this.est_data[country].estimation.infection.map((e, i) => {
-        return new Date(firstDateString)
+        const date = new Date(firstDateString)
           .add({ days: i })
           .toFormat("YYYY/MM/DD");
+        if (peak.max < e) {
+          peak.max = e;
+          peak.date = date;
+        }
+        return date;
       });
 
       let fact = {};
@@ -197,6 +224,8 @@ export default {
       this.labels = labels;
       this.estimation = this.est_data[country].estimation;
       this.fact = fact;
+      this.peak = peak;
+      this.lastUpdate = est_data[country]["last_update"];
     }
   },
   computed: {
