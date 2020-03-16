@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { Line, Doughnut, mixins } from 'vue-chartjs';
+import { Line, Doughnut, Bar, mixins } from 'vue-chartjs';
 const { reactiveProp } = mixins;
 
 Vue.component('doughnut-chart', {
@@ -8,7 +8,7 @@ Vue.component('doughnut-chart', {
   props: {
     options: {
       type: Object,
-      default: () => {},
+      default: () => { },
     },
   },
   mounted() {
@@ -18,14 +18,18 @@ Vue.component('doughnut-chart', {
 
 Vue.component('line-chart', {
   extends: Line,
-  mixins: [reactiveProp],
+  // mixins: [reactiveProp],
   props: {
+    chartdata: {
+      type: Object,
+      default: () => null
+    },
     options: {
       type: Object,
-      default: () => {},
+      default: () => null,
     },
   },
   mounted() {
-    this.renderChart(this.chartData, this.options);
+    this.renderChart(this.chartdata, this.options);
   },
 });
