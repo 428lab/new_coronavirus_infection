@@ -1,7 +1,48 @@
 <template>
-  <div class="mt-2">
+  <div class="mt-4">
+    <b-modal v-model="modalShow" hide-header hide-footer>
+      <h2 class="h3">免責事項</h2>
+      <hr />
+      <p class="mt-3">
+        この予測は、感染者数、回復者数、死者数のデータをもとにしたものとなります。
+      </p>
+      <p>
+        SEIRモデルと呼ばれる数理モデルにその数値を当てはめているため、環境側面等は一切考慮されていません。
+      </p>
+      <p>
+        あくまで実績数値をもとに数式とプログラムによる予測ということをご理解いただいた上でのグラフ閲覧をお願いしております。
+      </p>
+      <div class="text-center">
+        <button class="btn btn-lg btn-danger my-3" @click="modalShow = false">
+          私は上記の内容に了承します
+        </button>
+      </div>
+    </b-modal>
     <div class="container">
-      <h1 class="h3">COVID-19 感染者数予測</h1>
+      <div class="d-flex align-items-center justify-content-between">
+        <h1 class="h3">COVID-19 感染者数予測</h1>
+        <!-- <div>
+          <span class="p-2">
+            SNSでシェア
+          </span>
+          <a
+            href="https://www.facebook.com/share.php?u=https://estimate_covid-19.428lab.net"
+            class="text-center"
+          >
+            <span class=" p-2 bg-facebook">
+              <img src="/blandlogo/facebook.svg" height="28px" />
+            </span>
+          </a>
+          <a
+            href="https://twitter.com/share?text=新型コロナウイルスの感染者数を数理モデルで予測する - 四谷ラボ&url=https://estimate_covid-19.428lab.net&hashtags=新型コロナウイルス,COVID-19"
+            class="text-center"
+          >
+            <span class=" p-2 bg-twitter">
+              <img src="/blandlogo/twitter.svg" height="28px" />
+            </span>
+          </a>
+        </div> -->
+      </div>
       <div class="form-row align-items-center justify-content-end">
         <div class="col-auto">
           <label for="staticEmail" class="col-form-label">Country : </label>
@@ -21,8 +62,38 @@
         v-if="estimation"
         :chartdata="chartData"
         :options="chartOptions"
+        class="mt-3"
       />
     </div>
+    <footer class="mt-5">
+      <div class="container">
+        <div>
+          制作・運営:
+          <a href="https://twitter.com/SHINOHARATTT" target="_blank"
+            >T.Shinohara</a
+          >,
+          <a href="https://twitter.com/uesitananame55" target="_blank"
+            >Zinntikumugai</a
+          ><br />
+          開発リポジトリ:
+          <a
+            href="https://github.com/428lab/new_coronavirus_infection"
+            target="_blank"
+            >GitHub</a
+          ><br />
+          もとのブログ記事:
+          <a
+            href="https://blog.428lab.net/entry/2020/03/02/080000"
+            target="_blank"
+            >四谷ラボ公式ブログ</a
+          >
+        </div>
+        <div class="text-center mt-2">
+          &copy; 2020 -
+          <a href="https://428lab.net" target="_blank">四谷ラボ</a>
+        </div>
+      </div>
+    </footer>
   </div>
 </template>
 
@@ -31,6 +102,7 @@ require("date-utils");
 export default {
   data() {
     return {
+      modalShow: true,
       selectCountry: "Japan",
       countries: [],
       est_data: {},
@@ -60,11 +132,11 @@ export default {
             {
               id: "x-axis-stac",
               stacked: true,
-              display: false,
+              display: false
             },
             {
               id: "x-axis-no-stac",
-              stacked: false,
+              stacked: false
             }
           ]
         }
@@ -197,3 +269,12 @@ export default {
   }
 };
 </script>
+
+<style>
+.bg-twitter {
+  background-color: #1da1f2;
+}
+.bg-facebook {
+  background-color: #1778f2;
+}
+</style>

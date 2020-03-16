@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@nuxtjs/google-analytics": "^2.2.3"
+  }
+}
