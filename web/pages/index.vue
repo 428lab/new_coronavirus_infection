@@ -65,7 +65,7 @@
         class="mt-3"
       />
     </div>
-    <footer class="mt-5">
+    <footer class="mt-5 mb-3">
       <div class="container">
         <div>
           制作・運営:
