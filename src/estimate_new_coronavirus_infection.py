@@ -344,6 +344,14 @@ if __name__ == '__main__':
     country_json = open('country.json', 'r')
     country_param = json.load(country_json)
 
+    graph_json = open('./output.json', 'r')
+    graph_data = json.load(graph_json)
+
+    if country_name not in graph_data.keys():
+        graph_data[country_name] = dict()
+
+    print(graph_data[country_name]);
+
     ############################################################
     # Estimation infections in data
     ############################################################
@@ -362,5 +370,13 @@ if __name__ == '__main__':
     data.save_plot('estimation') 
     ax.clear()
 
-    f = open("../web/static/output.json", "w")
-    json.dump(data.graph, f)
+    # if datetime.datetime.now().strftime("%Y%m%d") not in graph_data[country_name].keys():
+    #     graph_data[country_name][datetime.datetime.now().strftime("%Y%m%d")] = dict()
+    graph_data[country_name] = data.graph
+    # graph_data[country_name][datetime.datetime.now().strftime("%Y%m%d")] = data.graph
+
+    f = open("../web/assets/output.json", "w")
+    json.dump(graph_data, f)
+
+    f = open("./output.json", "w")
+    json.dump(graph_data, f)
