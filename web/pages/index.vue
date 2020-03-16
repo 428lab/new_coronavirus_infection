@@ -12,19 +12,24 @@ export default {
       estimation: [],
       labels: [],
       chartColors: [],
-      max: 0,
       chartOptions: {
         scales: {
           yAxes: [
             {
               id: "y-axis-stac",
               stacked: true,
-              display: true
+              display: false,
+              ticks: {
+                max: 1000
+              }
             },
             {
               id: "y-axis-no-stac",
               stacked: false,
-              display: true
+              display: true,
+              ticks: {
+                max: 1000
+              }
             }
           ]
         }
@@ -39,16 +44,16 @@ export default {
     const firstDateString = labelsData.shift();
     const firstDate = new Date(firstDateString);
     const labels = est_data.estimation.infection.map((e, i) => {
-      let date = firstDate.add({ days: i });
-      return date.toFormat("YYYY/MM/DD");
+      return new Date(firstDateString).add({ days: i }).toFormat("YYYY/MM/DD");
     });
 
     let fact = {};
     Object.keys(est_data.fact).map(key => {
-      fact[key] = Object.keys(est_data.fact[key]).map(
-        date => est_data.fact[key][date]
-      );
+      fact[key] = Object.keys(est_data.fact[key]).map(date => {
+        return est_data.fact[key][date];
+      });
     });
+
     return {
       labels: labels,
       estimation: est_data.estimation,
