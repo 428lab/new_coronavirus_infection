@@ -2,3 +2,5 @@
 *.csv
 .env
 !covid_19_data.csv
+web/assets/json/*
+node_modules
