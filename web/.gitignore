@@ -88,3 +88,5 @@ sw.*
 
 # Vim swap files
 *.swp
+
+assets/output.json

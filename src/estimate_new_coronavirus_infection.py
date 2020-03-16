@@ -350,8 +350,6 @@ if __name__ == '__main__':
     if country_name not in graph_data.keys():
         graph_data[country_name] = dict()
 
-    print(graph_data[country_name]);
-
     ############################################################
     # Estimation infections in data
     ############################################################

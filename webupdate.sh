@@ -9,7 +9,7 @@ python3 estimate_new_coronavirus_infection.py Japan
 cd ..
 
 cd web
-yarn 
+yarn install
 yarn build
 yarn generate
 
