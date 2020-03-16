@@ -362,5 +362,6 @@ if __name__ == '__main__':
     data.save_plot('estimation') 
     ax.clear()
 
-    f = open("../web/static/output.json", "w")
+    f = open("../web/assets/json/" + datetime.datetime.now().strftime("%Y%m%d_") + country_name + ".json", "w")
+    data.graph["last_update"] = datetime.datetime.now().strftime("%Y/%m/%d %H:%M:%S")
     json.dump(data.graph, f)
