@@ -114,14 +114,14 @@ export default {
               stacked: true,
               // display: false,
               ticks: {
-                //  suggestedMax:1000
+                // max: 1000
               }
             },
             {
               id: "y-axis-no-stac",
               stacked: false,
               ticks: {
-                // suggestedMax: 1000
+                // max: 1000
               }
             }
           ],
@@ -184,10 +184,6 @@ export default {
       this.$data.peak = peak;
       this.$data.lastUpdate = this.est_data[country]["last_update"];
       this.$data.chart = this.chartData;
-
-
-      // let estMax = Math.max(this.estimation.infection)//,this.estimation.recovered,this.estimation.deaths)
-      // console.log(estMax)
     }
   },
   computed: {
