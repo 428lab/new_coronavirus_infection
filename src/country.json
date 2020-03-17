@@ -2,7 +2,16 @@
     "country": {
         "Japan": 120000000,
         "South Korea": 52000000,
-        "Itary": 60000000,
-        "Mainland China": 1400000000
+        "Italy": 60000000,
+        "Mainland China": 1400000000,
+        "France" : 63000000,
+        "Germany" : 82000000,
+        "UK" : 62000000,
+        "Spain" : 46000000,
+        "US" : 310000000,
+        "Iran" : 74000000,
+        "Russia" : 143000000,
+        "Canada" : 34000000,
+        "Hong Kong" : 7000000
     }
 }
