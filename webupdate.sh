@@ -5,20 +5,21 @@ rm -rf *.csv && unzip *.zip && rm -rf *.zip
 rm -rf *.png
 
 #python3 estimate_new_coronavirus_infection.py covid_19_data.csv
-python3 estimate_new_coronavirus_infection.py "Japan"
-python3 estimate_new_coronavirus_infection.py "Mainland China"
-python3 estimate_new_coronavirus_infection.py "South Korea"
-python3 estimate_new_coronavirus_infection.py "France"
-python3 estimate_new_coronavirus_infection.py "Italy"
-python3 estimate_new_coronavirus_infection.py "Germany"
-python3 estimate_new_coronavirus_infection.py "UK"
-python3 estimate_new_coronavirus_infection.py "Spain"
-python3 estimate_new_coronavirus_infection.py "Italy"
-python3 estimate_new_coronavirus_infection.py "US"
-python3 estimate_new_coronavirus_infection.py "Iran"
-python3 estimate_new_coronavirus_infection.py "Russia"
+python3 estimate_new_coronavirus_infection.py "Japan" &
+python3 estimate_new_coronavirus_infection.py "Mainland China" &
+python3 estimate_new_coronavirus_infection.py "South Korea" &
+python3 estimate_new_coronavirus_infection.py "France" &
+python3 estimate_new_coronavirus_infection.py "Italy" &
+python3 estimate_new_coronavirus_infection.py "Germany" &
+python3 estimate_new_coronavirus_infection.py "UK" &
+python3 estimate_new_coronavirus_infection.py "Spain" &
+python3 estimate_new_coronavirus_infection.py "Italy" &
+python3 estimate_new_coronavirus_infection.py "US" &
+python3 estimate_new_coronavirus_infection.py "Iran" &
+python3 estimate_new_coronavirus_infection.py "Russia" &
 # python3 estimate_new_coronavirus_infection.py "Canada"
 # python3 estimate_new_coronavirus_infection.py "Hong Kong"
+wait
 cd ..
 
 cd web
