@@ -67,7 +67,7 @@
         <h3 class="h4">予測結果</h3>
         <p>
           感染のピーク：{{ peak.date }}<br />
-          感染者数（1日の増減）：{{ peak.max }} 人
+          感染者数：{{ peak.max.toFixed() }} 人
         </p>
         <p>前回データ取得日時：{{ lastUpdate }}</p>
       </div>
