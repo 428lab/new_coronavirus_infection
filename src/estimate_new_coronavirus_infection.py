@@ -307,6 +307,8 @@ def convert_count_by_country(csv_data):
     data = {}
     for date, country, confirmed ,deaths, recovered in zip(csv_data['ObservationDate'], csv_data['Country/Region'],csv_data['Confirmed'],csv_data['Deaths'],csv_data['Recovered']):
         date = re.sub("[0-9]{2}:[0-9]{2}:[0-9]{2}","",date)
+        if len(date) == 8:
+            date = re.sub(r'(^[0-9]{2}/[0-9]{2}/)[0-9]{2}$',r'\1',date) + re.sub(r'^[0-9]{2}/[0-9]{2}/([0-9]{2}$)',r'20\1',date)
 
         if country not in data:
             data.setdefault(country,{date:[0, 0, 0]})
