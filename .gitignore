@@ -3,3 +3,4 @@
 .env
 !covid_19_data.csv
 node_modules
+output.json

@@ -56,3 +56,22 @@ $ python estimate_new_coronavirus_infection.py [country_name]
 ```
 
 This command output two *.png image files to current folder.
+
+You can find the available country names by running following script.
+
+```
+$ python getCountryList.py
+```
+
+You need to add a population of the country to `country.json` file.
+
+
+## Auto Generate
+edit `.env` file and run command.
+```
+$ docker-compose build --no-cache
+$ docker-compose up -d
+$ docker-compose exec covid_19_seir_model bash update.sh
+$ docker-compose exec covid_19_seir_model bash generate.sh
+$ docker-compose down
+```
