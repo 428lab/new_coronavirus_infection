@@ -9,3 +9,4 @@ rm -rf *.csv && unzip *.zip && rm -rf *.zip
 
 rm -rf *.png
 # python estimate_new_coronavirus_infection.py covid_19_data.csv
+bash generate.sh

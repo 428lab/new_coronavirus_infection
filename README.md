@@ -45,15 +45,15 @@ Again, set up docker.
 $ docker-compose down
 $ docker-compose build --no-cache
 $ docker-compose up -d
-$ docker-compose exec covid_19_seir_model bash
+$ docker-compose exec covid_19_seir_model bash update.sh
 ```
-
+<!-- 
 Enter sh in the container.
 
 ```
 $ bash update.sh
 $ python estimate_new_coronavirus_infection.py [country_name]
-```
+``` -->
 
 This command output two *.png image files to current folder.
 
