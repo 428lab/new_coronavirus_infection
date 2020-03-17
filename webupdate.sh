@@ -17,8 +17,8 @@ python3 estimate_new_coronavirus_infection.py "Italy"
 python3 estimate_new_coronavirus_infection.py "US"
 python3 estimate_new_coronavirus_infection.py "Iran"
 python3 estimate_new_coronavirus_infection.py "Russia"
-python3 estimate_new_coronavirus_infection.py "Canada"
-python3 estimate_new_coronavirus_infection.py "Hong Kong"
+# python3 estimate_new_coronavirus_infection.py "Canada"
+# python3 estimate_new_coronavirus_infection.py "Hong Kong"
 cd ..
 
 cd web
