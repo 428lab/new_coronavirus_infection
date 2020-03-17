@@ -38,7 +38,7 @@
           </a>
         </div>
       </div>
-      <!-- <div class="form-row align-items-center">
+      <div class="form-row align-items-center">
         <div class="col-auto">
           <label for="staticEmail" class="col-form-label">Country :</label>
         </div>
@@ -47,12 +47,12 @@
             <option v-for="item in countries" :key="item.id">{{ item }}</option>
           </select>
         </div>
-      </div>-->
+      </div>
       <p>前回データ取得日時：{{ lastUpdate }}</p>
       <p>発症者数のピーク(予測)：{{ peak.date }} 時点で {{ peak.max.toFixed() }}人</p>
 
       <!-- <button @click="setData()"></button> -->
-      <line-chart v-if="estimation" :chartdata="chartData" :options="chartOptions" class="mt-3" />
+      <line-chart v-if="chart" :chart-data="chart" :options="chartOptions" class="mt-3" />
     </div>
     <footer class="mt-5 mb-3">
       <div class="container">
@@ -85,29 +85,43 @@ require("date-utils");
 export default {
   data() {
     return {
+      chart: null,
       modalShow: true,
       selectCountry: "Japan",
       countries: [],
       est_data: {},
-      estimation: [],
+      estimation: {
+        infection: [],
+        recovered: [],
+        deaths: []
+      },
+      fact: {
+        infected: [],
+        recovered: [],
+        deaths: []
+      },
       labels: [],
-      chartColors: [],
+      peak: {
+        day: null,
+        max: 0
+      },
+      lastUpdate: null,
       chartOptions: {
         scales: {
           yAxes: [
             {
               id: "y-axis-stac",
               stacked: true,
-              display: false,
+              // display: false,
               ticks: {
-                max: 1000
+                //  suggestedMax:1000
               }
             },
             {
               id: "y-axis-no-stac",
               stacked: false,
               ticks: {
-                max: 1000
+                // suggestedMax: 1000
               }
             }
           ],
@@ -131,52 +145,22 @@ export default {
     let countries = Object.keys(est_data).map(key => {
       return key;
     });
-    const labelsData = Object.keys(est_data["Japan"].fact.infected).map(key => {
-      return key;
-    });
-    const firstDateString = labelsData.shift();
-    const firstDate = new Date(firstDateString);
-    let peak = { day: "2020/1/1", max: 0 };
-    const labels = est_data["Japan"].estimation.infection.map((e, i) => {
-      const date = new Date(firstDateString)
-        .add({ days: i })
-        .toFormat("YYYY/MM/DD");
-      if (peak.max < e) {
-        peak.max = e;
-        peak.date = new Date(firstDateString)
-          .add({ days: i })
-          .toFormat("MM月DD日");
-      }
-      return new Date(firstDateString).add({ days: i }).toFormat("YYYY/MM/DD");
-    });
-
-    let fact = {};
-    Object.keys(est_data["Japan"].fact).map(key => {
-      fact[key] = Object.keys(est_data["Japan"].fact[key]).map(date => {
-        return est_data["Japan"].fact[key][date];
-      });
-    });
     return {
-      labels: labels,
-      estimation: est_data["Japan"].estimation,
-      fact: fact,
       countries: countries,
-      est_data: est_data,
-      peak: peak,
-      lastUpdate: est_data["Japan"]["last_update"]
+      est_data: est_data
     };
+  },
+  mounted() {
+    this.setData(this.$data.selectCountry);
   },
   methods: {
     setData(country) {
-      // console.log(country);
       const labelsData = Object.keys(this.est_data[country].fact.infected).map(
-        key => {
-          return key;
-        }
+        key => key
       );
       const firstDateString = labelsData.shift();
       const firstDate = new Date(firstDateString);
-      let peak = { day: "2020/1/1", max: 0 };
+      let peak = { day: firstDateString, max: 0 };
       const labels = this.est_data[country].estimation.infection.map((e, i) => {
         const date = new Date(firstDateString)
           .add({ days: i })
@@ -194,11 +178,16 @@ export default {
           return this.est_data[country].fact[key][date];
         });
       });
-      this.labels = labels;
+      this.$data.labels = labels;
       this.estimation = this.est_data[country].estimation;
-      this.fact = fact;
-      this.peak = peak;
-      this.lastUpdate = this.est_data[country]["last_update"];
+      this.$data.fact = fact;
+      this.$data.peak = peak;
+      this.$data.lastUpdate = this.est_data[country]["last_update"];
+      this.$data.chart = this.chartData;
+
+
+      // let estMax = Math.max(this.estimation.infection)//,this.estimation.recovered,this.estimation.deaths)
+      // console.log(estMax)
     }
   },
   computed: {

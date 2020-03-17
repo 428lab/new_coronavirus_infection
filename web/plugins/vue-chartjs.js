@@ -5,7 +5,7 @@ Vue.component('line-chart', {
   extends: Line,
   mixins: [mixins.reactiveProp],
   props: {
-    chartdata: {
+    chartData: {
       type: Object,
       default: () => null
     },
@@ -15,6 +15,6 @@ Vue.component('line-chart', {
     },
   },
   mounted() {
-    this.renderChart(this.chartdata, this.options);
+    this.renderChart(this.chartData, this.options);
   },
 });
