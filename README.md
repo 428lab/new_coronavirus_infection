@@ -45,15 +45,15 @@ Again, set up docker.
 $ docker-compose down
 $ docker-compose build --no-cache
 $ docker-compose up -d
-$ docker-compose exec covid_19_seir_model bash update.sh
+$ docker-compose exec covid_19_seir_model bash
 ```
-<!-- 
+
 Enter sh in the container.
 
 ```
 $ bash update.sh
 $ python estimate_new_coronavirus_infection.py [country_name]
-``` -->
+```
 
 This command output two *.png image files to current folder.
 
@@ -65,3 +65,13 @@ $ python getCountryList.py
 
 You need to add a population of the country to `country.json` file.
 
+
+## Auto Generate
+edit `.env` file and run command.
+```
+$ docker-compose build --no-cache
+$ docker-compose up -d
+$ docker-compose exec covid_19_seir_model bash update.sh
+$ docker-compose exec covid_19_seir_model bash generate.sh
+$ docker-compose down
+```
