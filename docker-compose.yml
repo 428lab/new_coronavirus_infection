@@ -10,3 +10,8 @@ services:
     environment:
       KAGGLE_USER_NAME: ${API_NAME}
       KAGGLE_API_KEY: ${API_KEY}
+
+  web_build:
+    image: node:11.14.0-alpine
+    volumes:
+      - ./web:/var/www
