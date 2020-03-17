@@ -19,17 +19,19 @@
     </b-modal>
     <div class="container">
       <div class="d-flex align-items-center justify-content-between">
-        <h1 class="h3">COVID-19 発症者数予測</h1>
+        <h1 class="h3">COVID-19の感染状況を予測</h1>
         <div>
           <span class="p-2">SNSでシェア</span>
           <a
             href="https://www.facebook.com/share.php?u=https://covid19.428lab.net"
+            target="_blank"
             class="btn bg-facebook"
           >
             <img src="/blandlogo/facebook.svg" height="28px" />
           </a>
           <a
             href="https://twitter.com/share?text=新型コロナウイルスの発症者数を数理モデルで予測する - 四谷ラボ&url=https://covid19.428lab.net&hashtags=新型コロナウイルス,COVID-19"
+            target="_blank"
             class="btn bg-twitter"
           >
             <img src="/blandlogo/twitter.svg" height="28px" />
