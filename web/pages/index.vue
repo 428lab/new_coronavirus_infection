@@ -4,13 +4,12 @@
       <h2 class="h3">免責事項</h2>
       <hr />
       <p class="mt-3">
-        この予測は、感染者数、回復者数、死者数のデータをもとにしたものとなります。
+        この予測は、現時点での各国の感染者数・回復者数・死者数をもとにSEIRモデルを用いて今後の広がり方を予測したものとなります。<br />
+        SEIRモデルでは気温や湿度、また人の動きなどのパラメータはないため、環境側面等は一切考慮されません。<br />
+        あくまで現段階での実績数値をもとに、プログラムによる予測ということをご理解いただいた上でのグラフ閲覧をお願いしております。<br />
       </p>
       <p>
-        SEIRモデルと呼ばれる数理モデルにその数値を当てはめているため、環境側面等は一切考慮されていません。
-      </p>
-      <p>
-        あくまで実績数値をもとに数式とプログラムによる予測ということをご理解いただいた上でのグラフ閲覧をお願いしております。
+        このグラフによる将来予測については一切の保証はありません。予測が外れたとしても、我々は一切それについて責務を追うことはありません。<br />
       </p>
       <div class="text-center">
         <button class="btn btn-lg btn-danger my-3" @click="modalShow = false">
@@ -43,7 +42,7 @@
           </a>
         </div> -->
       </div>
-      <div class="form-row align-items-center justify-content-end">
+      <div class="form-row align-items-center">
         <div class="col-auto">
           <label for="staticEmail" class="col-form-label">Country : </label>
         </div>
@@ -57,10 +56,6 @@
           </select>
         </div>
       </div>
-      <p>
-        前回更新日時：{{ lastUpdate }}
-      </p>
-
       <!-- <button @click="setData()"></button> -->
       <line-chart
         v-if="estimation"
@@ -74,6 +69,7 @@
           感染のピーク：{{ peak.date }}<br />
           感染者数（1日の増減）：{{ peak.max }} 人
         </p>
+        <p>前回データ取得日時：{{ lastUpdate }}</p>
       </div>
     </div>
     <footer class="mt-5 mb-3">
