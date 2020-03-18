@@ -13,6 +13,6 @@ JSON=$(echo $JSON | jq "to_entries | map(.key)" -c)
 echo $JSON
 len=$(echo $JSON | jq length)
 for i in $(seq 0 $(($len - 1)) ); do
-    python estimate_new_coronavirus_infection.py "$(echo $JSON | jq ".[$i]" -r)" &
+    python estimate_new_coronavirus_infection.py "$(echo $JSON | jq ".[$i]" -r)"
 done
-wait
+# wait
