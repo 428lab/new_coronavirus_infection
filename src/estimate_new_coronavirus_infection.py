@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import os
 import sys
 import csv
 import json
@@ -346,8 +347,11 @@ if __name__ == '__main__':
     country_json = open('country.json', 'r')
     country_param = json.load(country_json)
 
-    graph_json = open('./output.json', 'r')
-    graph_data = json.load(graph_json)
+    if(os.path.exists('./output.json')):
+        graph_json = open('./output.json', 'r')
+        graph_data = json.load(graph_json)
+    else:
+        graph_data = dict()
 
     if country_name not in graph_data.keys():
         graph_data[country_name] = dict()

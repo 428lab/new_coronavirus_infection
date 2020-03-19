@@ -7,6 +7,7 @@ services:
       - ./src:/var/www/src
       - ./web:/var/www/web
     tty: true
+    env_file: .env
     environment:
       KAGGLE_USER_NAME: ${API_NAME}
       KAGGLE_API_KEY: ${API_KEY}

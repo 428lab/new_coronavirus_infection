@@ -1,75 +1,129 @@
 <template>
-  <div class="mt-4">
+  <div class="bg-light">
     <b-modal v-model="modalShow" hide-header hide-footer>
-      <h2 class="h3">免責事項</h2>
+      <h2 class="h3 text-danger text-center"><strong>免責事項</strong></h2>
       <hr />
       <p class="mt-3">
-        この予測は、現時点での各国の発症者数・回復者数・死者数をもとにSEIRモデルを用いて今後の広がり方を予測したものとなります。
+        このグラフは、四谷ラボ公式ブログの
+        <a
+          href="https://blog.428lab.net/entry/2020/03/02/080000"
+          target="_blank"
+          >新型コロナウイルス感染者数を数理モデルで推定
+        </a>
+        という記事のスクリプトを使用しています。<br />
+        現時点での各国の発症者数・回復者数・死者数をもとにSEIRモデルを用いて今後の広がり方を予測したものとなります。
         <br />SEIRモデルでは気温や湿度、また人の動きなどのパラメータはないため、環境側面等は一切考慮されません。
         <br />あくまで現段階での実績数値をもとに、プログラムによる予測ということをご理解いただいた上でのグラフ閲覧をお願いしております。
-        <br />
+      </p>
+        <hr>
+      <p>
+        グラフの更新は1時間に1回、自動更新されます。もとのデータが更新されていない場合は変化しません。
       </p>
       <p>
-        このグラフによる将来予測については一切の保証はありません。予測が外れたとしても、我々は一切それについて責務を追うことはありません。
+        <strong>
+          このグラフによる将来予測については一切の保証はありません。予測が外れたとしても、我々は一切それについて責務を追うことはありません。
+        </strong>
         <br />
       </p>
       <div class="text-center">
-        <button class="btn btn-lg btn-danger my-3" @click="modalShow = false">私は上記の内容に了承します</button>
+        <button
+          class="btn btn-lg btn-outline-danger my-3"
+          @click="modalShow = false"
+        >
+          了承します
+        </button>
       </div>
     </b-modal>
-    <div class="container">
-      <div class="d-flex align-items-center justify-content-between">
-        <h1 class="h3">COVID-19の感染状況を予測</h1>
-        <div>
-          <span class="p-2">SNSでシェア</span>
+    <div class="container bg-white pt-4 pb-4">
+      <div class="d-md-flex align-items-center justify-content-between">
+        <h1 class="h3">COVID-19の感染予測</h1>
+      </div>
+      <div class="d-sm-flex">
+        <div class="d-flex flex-fill mt-2">
+          <div class="">
+            <label for="staticEmail" class="col-form-label">Country :</label>
+          </div>
+          <div class="flex-fill ml-2">
+            <select
+              class="form-control"
+              v-model="selectCountry"
+              @change="setData(selectCountry)"
+            >
+              <option v-for="item in countries" :key="item.id">{{
+                item
+              }}</option>
+            </select>
+          </div>
+        </div>
+        <div class="ml-3 mt-2 text-right">
+          <a
+            href="https://twitter.com/share?text=新型コロナウイルスの発症者数を数理モデルで予測する - 四谷ラボ&url=https://covid19.428lab.net&hashtags=新型コロナウイルス,COVID_19,新型コロナウイルス対策サイト"
+            target="_blank"
+            class="btn bg-twitter text-white"
+          >
+            <img src="/blandlogo/twitter.svg" height="14px" /> ツイート
+          </a>
           <a
             href="https://www.facebook.com/share.php?u=https://covid19.428lab.net"
             target="_blank"
-            class="btn bg-facebook"
+            class="btn bg-facebook text-white"
           >
-            <img src="/blandlogo/facebook.svg" height="28px" />
-          </a>
-          <a
-            href="https://twitter.com/share?text=新型コロナウイルスの発症者数を数理モデルで予測する - 四谷ラボ&url=https://covid19.428lab.net&hashtags=新型コロナウイルス,COVID-19"
-            target="_blank"
-            class="btn bg-twitter"
-          >
-            <img src="/blandlogo/twitter.svg" height="28px" />
+            <img src="/blandlogo/facebook.svg" height="14px" /> シェア
           </a>
         </div>
       </div>
-      <div class="form-row align-items-center">
-        <div class="col-auto">
-          <label for="staticEmail" class="col-form-label">Country :</label>
-        </div>
-        <div class="col-auto">
-          <select class="form-control" v-model="selectCountry" @change="setData(selectCountry)">
-            <option v-for="item in countries" :key="item.id">{{ item }}</option>
-          </select>
-        </div>
+      <div class="alert alert-info mt-3">
+        <strong
+          ><a href="javascript:void(0);" @click="modalShow = true">免責事項</a
+          >は、必ずお読みください。</strong
+        >
       </div>
-      <p>前回データ取得日時：{{ lastUpdate }}</p>
-      <p>発症者数のピーク(予測)：{{ peak.date }} 時点で {{ peak.max.toFixed() }}人</p>
-
-      <!-- <button @click="setData()"></button> -->
-      <line-chart v-if="chart" :chart-data="chart" :options="chartOptions" class="mt-3" />
+      <div style="height:60vh;" class="mt-3">
+        <line-chart
+          v-if="chart"
+          :chart-data="chart"
+          :options="options"
+          style="height:60vh;"
+        />
+      </div>
+      <div class="mt-3">
+        <strong>前回データ取得日時</strong>
+        {{ lastUpdate }}
+      </div>
+      <div class="mt-2">
+        <strong>発症者数ピーク(予測) </strong>
+        {{ peak.date }} 時点で
+        {{ peak.max.toFixed().replace(/(\d)(?=(\d{3})+$)/g, "$1,") }}人
+      </div>
     </div>
-    <footer class="mt-5 mb-3">
-      <div class="container">
+    <footer class="">
+      <div class="pt-3 pb-5 container bg-dark text-white">
         <div>
-          制作・運営:
-          <a href="https://twitter.com/SHINOHARATTT" target="_blank">T.Shinohara</a>,
-          <a href="https://twitter.com/uesitananame55" target="_blank">Zinntikumugai</a>
-          <br />開発リポジトリ:
-          <a
-            href="https://github.com/428lab/new_coronavirus_infection"
-            target="_blank"
-          >GitHub</a>
-          <br />もとのブログ記事:
+          もとのブログ記事：
           <a
             href="https://blog.428lab.net/entry/2020/03/02/080000"
             target="_blank"
-          >四谷ラボ公式ブログ</a>
+            >四谷ラボ公式ブログ</a
+          >
+          <br />データソース：
+          <a
+            href="https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset"
+            target="_blank"
+            >Kaggle</a
+          >
+          <br />開発リポジトリ：
+          <a
+            href="https://github.com/428lab/new_coronavirus_infection"
+            target="_blank"
+            >GitHub</a
+          >
+          <br />制作・運営：
+          <a href="https://twitter.com/SHINOHARATTT" target="_blank"
+            >T.Shinohara</a
+          >,
+          <a href="https://twitter.com/uesitananame55" target="_blank"
+            >Zinntikumugai</a
+          >
         </div>
         <div class="text-center mt-2">
           &copy; 2020 -
@@ -106,13 +160,15 @@ export default {
         max: 0
       },
       lastUpdate: null,
-      chartOptions: {
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
         scales: {
           yAxes: [
             {
               id: "y-axis-stac",
               stacked: true,
-              // display: false,
+              display: false,
               ticks: {
                 // max: 1000
               }
@@ -160,6 +216,7 @@ export default {
       );
       const firstDateString = labelsData.shift();
       const firstDate = new Date(firstDateString);
+      let scaleMax = 0;
       let peak = { day: firstDateString, max: 0 };
       const labels = this.est_data[country].estimation.infection.map((e, i) => {
         const date = new Date(firstDateString)
@@ -167,9 +224,18 @@ export default {
           .toFormat("YYYY/MM/DD");
         if (peak.max < e) {
           peak.max = e;
+          scaleMax = e;
           peak.date = date;
         }
         return date;
+      });
+
+      this.est_data[country].estimation.recovered.map(e => {
+        if (scaleMax < e) scaleMax = e;
+      });
+
+      this.est_data[country].estimation.deaths.map(e => {
+        if (scaleMax < e) scaleMax = e;
       });
 
       let fact = {};
@@ -178,12 +244,30 @@ export default {
           return this.est_data[country].fact[key][date];
         });
       });
+
+      console.log(this.est_data[country].fact["infected"]);
+      labels.forEach(e => {
+        let sum = 0;
+        if (this.est_data[country].fact["infected"][e])
+          sum += this.est_data[country].fact["infected"][e];
+        if (this.est_data[country].fact["recovered"][e])
+          sum += this.est_data[country].fact["recovered"][e];
+        if (this.est_data[country].fact["deaths"][e])
+          sum += this.est_data[country].fact["deaths"][e];
+
+        if (scaleMax < sum) scaleMax = sum;
+      });
+
+      scaleMax = Math.round(scaleMax * 1.1);
+
       this.$data.labels = labels;
       this.estimation = this.est_data[country].estimation;
       this.$data.fact = fact;
       this.$data.peak = peak;
       this.$data.lastUpdate = this.est_data[country]["last_update"];
       this.$data.chart = this.chartData;
+      // this.$data.options.scales.yAxes[0].ticks.max = scaleMax;
+      // this.$data.options.scales.yAxes[1].ticks.max = scaleMax;
     }
   },
   computed: {
