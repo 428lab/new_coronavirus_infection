@@ -163,36 +163,6 @@ export default {
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        scales: {
-          yAxes: [
-            {
-              id: "y-axis-stac",
-              stacked: true,
-              display: false,
-              ticks: {
-                // max: 1000
-              }
-            },
-            {
-              id: "y-axis-no-stac",
-              stacked: false,
-              ticks: {
-                // max: 1000
-              }
-            }
-          ],
-          xAxes: [
-            {
-              id: "x-axis-stac",
-              stacked: true,
-              display: false
-            },
-            {
-              id: "x-axis-no-stac",
-              stacked: false
-            }
-          ]
-        }
       }
     };
   },
@@ -266,8 +236,6 @@ export default {
       this.$data.peak = peak;
       this.$data.lastUpdate = this.est_data[country]["last_update"];
       this.$data.chart = this.chartData;
-      // this.$data.options.scales.yAxes[0].ticks.max = scaleMax;
-      // this.$data.options.scales.yAxes[1].ticks.max = scaleMax;
     }
   },
   computed: {
@@ -282,8 +250,7 @@ export default {
             pointRadius: 0,
             pointHoverRadius: 10,
             data: this.estimation.infection,
-            xAxisID: "x-axis-no-stac",
-            yAxisID: "y-axis-no-stac"
+            stack: false,
           },
           {
             label: "回復者数（推定）",
@@ -292,8 +259,7 @@ export default {
             pointRadius: 0,
             pointHoverRadius: 10,
             data: this.estimation.recovered,
-            xAxisID: "x-axis-no-stac",
-            yAxisID: "y-axis-no-stac"
+            stack: false,
           },
           {
             label: "死者数（推定）",
@@ -302,8 +268,7 @@ export default {
             pointRadius: 0,
             pointHoverRadius: 10,
             data: this.estimation.deaths,
-            xAxisID: "x-axis-no-stac",
-            yAxisID: "y-axis-no-stac"
+            stack: false,
           },
           {
             type: "bar",
@@ -311,8 +276,7 @@ export default {
             borderColor: "#E88",
             backgroundColor: "#E88",
             data: this.fact.infected,
-            xAxisID: "x-axis-stac",
-            yAxisID: "y-axis-stac"
+            stack: true,
           },
           {
             type: "bar",
@@ -321,8 +285,7 @@ export default {
             backgroundColor: "#8C8",
             borderWidth: 3,
             data: this.fact.recovered,
-            xAxisID: "x-axis-stac",
-            yAxisID: "y-axis-stac"
+            stack: true,
           },
           {
             type: "bar",
@@ -331,8 +294,7 @@ export default {
             backgroundColor: "#555",
             borderWidth: 3,
             data: this.fact.deaths,
-            xAxisID: "x-axis-stac",
-            yAxisID: "y-axis-stac"
+            stack: true,
           }
         ]
       };
