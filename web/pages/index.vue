@@ -52,7 +52,11 @@
           </div>
         </div>
         <div class="ml-3 mt-2 text-right">
-          <a href="javascript:void(0);" class="mr-2" @click="$i18n.setLocale('ja')">
+          <a
+            href="javascript:void(0);"
+            class="mr-2"
+            @click="changeLocale('ja')"
+          >
             <img
               src="/country_flag/jp.svg"
               alt=""
@@ -60,7 +64,11 @@
               class="border"
             />
           </a>
-          <a href="javascript:void(0);" class="mr-2" @click="$i18n.setLocale('en')">
+          <a
+            href="javascript:void(0);"
+            class="mr-2"
+            @click="changeLocale('en')"
+          >
             <img
               src="/country_flag/us.svg"
               alt=""
@@ -198,6 +206,10 @@ export default {
     this.setData(this.$data.selectCountry);
   },
   methods: {
+    changeLocale(locale) {
+      this.$i18n.setLocaleCookie(locale);
+      this.$router.go(0);
+    },
     setData(country) {
       const labelsData = Object.keys(this.est_data[country].fact.infected).map(
         key => key
