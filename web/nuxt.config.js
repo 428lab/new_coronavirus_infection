@@ -1,3 +1,4 @@
+import i18n from './i18n.config'
 
 export default {
   mode: 'spa',
@@ -70,6 +71,7 @@ export default {
     'bootstrap-vue/nuxt',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
+    ['nuxt-i18n', i18n],
   ],
   /*
   ** Build configuration

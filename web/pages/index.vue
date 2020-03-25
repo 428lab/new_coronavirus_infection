@@ -1,28 +1,22 @@
 <template>
   <div class="bg-light">
     <b-modal v-model="modalShow" hide-header hide-footer>
-      <h2 class="h3 text-danger text-center"><strong>免責事項</strong></h2>
+      <h2 class="h3 text-danger text-center">
+        <strong>{{ $t("messageTitle") }}</strong>
+      </h2>
       <hr />
       <p class="mt-3">
-        このグラフは、四谷ラボ公式ブログの
-        <a
-          href="https://blog.428lab.net/entry/2020/03/02/080000"
-          target="_blank"
-          >新型コロナウイルス感染者数を数理モデルで推定
-        </a>
-        という記事のスクリプトを使用しています。<br />
-        現時点での各国の発症者数・回復者数・死者数をもとにSEIRモデルを用いて今後の広がり方を予測したものとなります。
-        <br />SEIRモデルでは気温や湿度、また人の動きなどのパラメータはないため、環境側面等は一切考慮されません。
-        <br />あくまで現段階での実績数値をもとに、プログラムによる予測ということをご理解いただいた上でのグラフ閲覧をお願いしております。
+        {{ $t("message1") }}<br />
+        {{ $t("message2") }} <br />
+        {{ $t("message3") }} <br />
+        {{ $t("message4") }}
       </p>
-        <hr>
+      <hr />
       <p>
-        グラフの更新は1時間に1回、自動更新されます。もとのデータが更新されていない場合は変化しません。
+        {{ $t("message5") }}
       </p>
       <p>
-        <strong>
-          このグラフによる将来予測については一切の保証はありません。予測が外れたとしても、我々は一切それについて責務を追うことはありません。
-        </strong>
+        <strong> {{ $t("message6") }} </strong>
         <br />
       </p>
       <div class="text-center">
@@ -30,18 +24,20 @@
           class="btn btn-lg btn-outline-danger my-3"
           @click="modalShow = false"
         >
-          了承します
+          {{ $t("messageButton") }}
         </button>
       </div>
     </b-modal>
     <div class="container bg-white pt-4 pb-4">
       <div class="d-md-flex align-items-center justify-content-between">
-        <h1 class="h3">COVID-19の感染予測</h1>
+        <h1 class="h3">{{ $t("siteTitle") }}</h1>
       </div>
       <div class="d-sm-flex">
         <div class="d-flex flex-fill mt-2">
           <div class="">
-            <label for="staticEmail" class="col-form-label">Country :</label>
+            <label for="staticEmail" class="col-form-label">{{
+              $t("selectCountry")
+            }}</label>
           </div>
           <div class="flex-fill ml-2">
             <select
@@ -56,26 +52,46 @@
           </div>
         </div>
         <div class="ml-3 mt-2 text-right">
+          <a href="javascript:void(0);" class="mr-2" @click="$i18n.setLocale('ja')">
+            <img
+              src="/country_flag/jp.svg"
+              alt=""
+              height="24px"
+              class="border"
+            />
+          </a>
+          <a href="javascript:void(0);" class="mr-2" @click="$i18n.setLocale('en')">
+            <img
+              src="/country_flag/us.svg"
+              alt=""
+              height="24px"
+              width="36px"
+              class="border"
+            />
+          </a>
           <a
             href="https://twitter.com/share?text=新型コロナウイルスの発症者数を数理モデルで予測する - 四谷ラボ&url=https://covid19.428lab.net&hashtags=新型コロナウイルス,COVID_19,新型コロナウイルス対策サイト"
             target="_blank"
             class="btn bg-twitter text-white"
           >
-            <img src="/blandlogo/twitter.svg" height="14px" /> ツイート
+            <img src="/blandlogo/twitter.svg" height="14px" />
+            {{ $t("sns-twitter") }}
           </a>
           <a
             href="https://www.facebook.com/share.php?u=https://covid19.428lab.net"
             target="_blank"
             class="btn bg-facebook text-white"
           >
-            <img src="/blandlogo/facebook.svg" height="14px" /> シェア
+            <img src="/blandlogo/facebook.svg" height="14px" />
+            {{ $t("sns-facebook") }}
           </a>
         </div>
       </div>
       <div class="alert alert-info mt-3">
-        <strong
-          ><a href="javascript:void(0);" @click="modalShow = true">免責事項</a
-          >は、必ずお読みください。</strong
+        <strong>
+          <a href="javascript:void(0);" @click="modalShow = true">{{
+            $t("disclaimer")
+          }}</a></strong
         >
       </div>
       <div style="height:60vh;" class="mt-3">
@@ -87,37 +103,37 @@
         />
       </div>
       <div class="mt-3">
-        <strong>前回データ取得日時</strong>
-        {{ lastUpdate }}
+        <strong>{{ $t("lastUpdate") }}</strong> : {{ lastUpdate }}
       </div>
       <div class="mt-2">
-        <strong>発症者数ピーク(予測) </strong>
-        {{ peak.date }} 時点で
-        {{ peak.max.toFixed().replace(/(\d)(?=(\d{3})+$)/g, "$1,") }}人
+        <strong>{{ $t("peakOutbreak") }}</strong> :
+        {{ peak.max.toFixed().replace(/(\d)(?=(\d{3})+$)/g, "$1,")
+        }}{{ $t("peakCount") }} {{ $t("peakNowEn") }}{{ peak.date
+        }}{{ $t("peakNowJa") }}
       </div>
     </div>
     <footer class="">
       <div class="pt-3 pb-5 container bg-dark text-white">
         <div>
-          もとのブログ記事：
+          {{ $t("originalArticle") }}
           <a
             href="https://blog.428lab.net/entry/2020/03/02/080000"
             target="_blank"
-            >四谷ラボ公式ブログ</a
+            >{{ $t("yotsuya_lab_blog") }}</a
           >
-          <br />データソース：
+          <br />{{ $t("originalDataSource") }}
           <a
             href="https://www.kaggle.com/sudalairajkumar/novel-corona-virus-2019-dataset"
             target="_blank"
             >Kaggle</a
           >
-          <br />開発リポジトリ：
+          <br />{{ $t("repository") }}
           <a
             href="https://github.com/428lab/new_coronavirus_infection"
             target="_blank"
             >GitHub</a
           >
-          <br />制作・運営：
+          <br />{{ $t("build") }}
           <a href="https://twitter.com/SHINOHARATTT" target="_blank"
             >T.Shinohara</a
           >,
@@ -127,7 +143,9 @@
         </div>
         <div class="text-center mt-2">
           &copy; 2020 -
-          <a href="https://428lab.net" target="_blank">四谷ラボ</a>
+          <a href="https://428lab.net" target="_blank">{{
+            $t("yotsuya_lab")
+          }}</a>
         </div>
       </div>
     </footer>
@@ -162,7 +180,7 @@ export default {
       lastUpdate: null,
       options: {
         responsive: true,
-        maintainAspectRatio: false,
+        maintainAspectRatio: false
       }
     };
   },
@@ -244,57 +262,57 @@ export default {
         labels: this.labels,
         datasets: [
           {
-            label: "発症者数（推定）",
+            label: this.$t("graphTitleOutbreak2"),
             borderColor: "#F44",
             fill: false,
             pointRadius: 0,
             pointHoverRadius: 10,
             data: this.estimation.infection,
-            stack: false,
+            stack: false
           },
           {
-            label: "回復者数（推定）",
+            label: this.$t("graphTitleRecoverd2"),
             borderColor: "#4A4",
             fill: false,
             pointRadius: 0,
             pointHoverRadius: 10,
             data: this.estimation.recovered,
-            stack: false,
+            stack: false
           },
           {
-            label: "死者数（推定）",
+            label: this.$t("graphTitleDeath2"),
             borderColor: "#222",
             fill: false,
             pointRadius: 0,
             pointHoverRadius: 10,
             data: this.estimation.deaths,
-            stack: false,
+            stack: false
           },
           {
             type: "bar",
-            label: "発症者数",
+            label: this.$t("graphTitleOutbreak"),
             borderColor: "#E88",
             backgroundColor: "#E88",
             data: this.fact.infected,
-            stack: true,
+            stack: true
           },
           {
             type: "bar",
-            label: "回復者数",
+            label: this.$t("graphTitleRecoverd"),
             borderColor: "#8C8",
             backgroundColor: "#8C8",
             borderWidth: 3,
             data: this.fact.recovered,
-            stack: true,
+            stack: true
           },
           {
             type: "bar",
-            label: "死者数",
+            label: this.$t("graphTitleDeath"),
             borderColor: "#555",
             backgroundColor: "#555",
             borderWidth: 3,
             data: this.fact.deaths,
-            stack: true,
+            stack: true
           }
         ]
       };
