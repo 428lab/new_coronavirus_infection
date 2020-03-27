@@ -16,3 +16,9 @@ services:
     image: node:11.14.0-alpine
     volumes:
       - ./web:/var/www
+
+  # rust_api:
+  #   build:
+  #     context: ./docker/rust
+  #   volumes:
+  #     - ./api:/var/www/api
