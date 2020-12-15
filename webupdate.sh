@@ -8,9 +8,8 @@ docker-compose exec -T covid_19_seir_model bash generate.sh
 
 docker-compose run -T web_build ash -c "cd /var/www && ash update.sh"
 
-docker-compose down
+docker-compose down --rmi all -v
 
 rm -rf /var/www/html/*
 cp -r web/dist/* /var/www/html 
 chown -R www-data:www-data /var/www/html
-
